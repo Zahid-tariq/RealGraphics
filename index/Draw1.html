@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Filters in javascript</title>
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script src = "https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
+	<script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<style type="text/css">
+		.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<input type='file' onchange="readURL(this);" />
+		<img id="blah" src="https://fsmedia.imgix.net/ba/50/76/0c/2ad9/4ccc/b9ce/2b008660a8b1/keanu-reeves-chapter-2.jpeg?rect=0%2C0%2C1400%2C700&auto=format%2Ccompress&dpr=2&w=650" alt="your image" width="700px" height="400px" style="display: block; margin: 0 auto;" />
+
+	<br/>
+	<div class="row">
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Blur</label>
+				<input type="range" step="1"  min="0" max="10" value="0" class="slider" id="myRange" onchange="applyFilter()" data-filter="blur" data-scale="px">
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Brightness</label>
+				<input type="range" step="1" min="0" max="200" value="100" class="slider" id="myRange" onchange="applyFilter()" data-filter="brightness" data-scale="%">
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Contrast</label>
+				<input type="range" step="1" min="0" max="200" value="100" class="slider" id="myRange" onchange="applyFilter()" data-filter="contrast" data-scale="%">
+			</div>
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Grayscale</label>
+				<input type="range" step="1" min="0" max="100" value="0" class="slider" id="myRange" onchange="applyFilter()" data-filter="grayscale" data-scale="%">
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Hue Rotate</label>
+				<input type="range" step="10" min="0" max="360" value="0" class="slider" id="myRange" onchange="applyFilter()" data-filter="hue-rotate" data-scale="deg">
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Invert</label>
+				<input type="range" step="1" min="0" max="100" value="0" class="slider" id="myRange" onchange="applyFilter()" data-filter="invert" data-scale="%">
+			</div>
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Opacity</label>
+				<input type="range" step="1" min="0" max="100" value="100" class="slider" id="myRange" onchange="applyFilter()" data-filter="opacity" data-scale="%">
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Saturation</label>
+				<input type="range" step="1" min="1" max="100" value="1" class="slider" id="myRange" onchange="applyFilter()" data-filter="saturate" data-scale="">
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="slidecontainer">
+				<label>Sepia</label>
+				<input type="range" step="1" min="0" max="100" value="0" class="slider" id="myRange" onchange="applyFilter()" data-filter="sepia" data-scale="%">
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+   var socket = io.connect();
+
+	 const {room} =  Qs.parse(location.search, { ignoreQueryPrefix: true });
+   socket.emit('join',room);
+
+	var image = document.querySelector('img');
+		var filterControls = document.querySelectorAll('input[type=range]');
+      var computedFilters;
+		function applyFilter(computedFilters = '') {
+			//var computedFilters = '';
+			filterControls.forEach(function(item, index) {
+				computedFilters += item.getAttribute('data-filter') + '(' + item.value + item.getAttribute('data-scale') + ') ';
+				//console.log(computedFilters);
+			});
+			image.style.filter = computedFilters;
+
+			var data = {
+				x:image.style.filter
+			}
+			socket.emit('image',data);
+
+		};
+
+		socket.on('image1', dada);
+		function dada(data)
+		{
+			image.style.filter = data.x;
+			//console.log(computedFilters);
+		    //applyFilter(y);
+			//applyFilter();
+			//filterControls(item,data.x);
+	    }
+</script>
+
+<script>
+     function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah')
+												.attr('src', e.target.result);
+
+
+												socket.emit('user-image',e.target.result);
+											//	console.log(e.target.result);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+						}
+
+				}
+			//		socket.on('user-image1',dada1);
+				socket.on('user-image1', function(data) {
+          $("#blah").attr("src",data);
+ 	});
+
+</script>
+
+</body>
+</html>
+

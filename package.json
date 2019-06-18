@@ -1,0 +1,19 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "Editor",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "10.15.0"
+  },
+  "author": "zahid",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "query-string": "^6.4.2",
+    "socket.io": "^2.2.0"
+  }
+}
